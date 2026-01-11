@@ -1,4 +1,6 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using backend.BL;
+using Microsoft.AspNetCore.Mvc;
+using System.Security.Cryptography.X509Certificates;
 
 namespace backend.Controllers
 {
@@ -15,7 +17,6 @@ namespace backend.Controllers
         [HttpGet(Name = "GetText")]
         public void GetText(string csvText)
         {
-            string filePath = Path.Combine(folderPath, "Test.csv"); //define csv file
 
             string id = Guid.NewGuid().ToString();
 
@@ -41,6 +42,12 @@ namespace backend.Controllers
                     Console.WriteLine("Error");
                 }
             }
+        }
+        [HttpPost("retrieve-text")]
+        public void retrieveText(string csvText)
+        {
+            URLShortener urlShortener = new URLShortener();
+            urlShortener.UseRetrieveText(csvText);
         }
     }
 }
