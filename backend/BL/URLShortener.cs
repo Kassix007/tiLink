@@ -21,6 +21,7 @@ namespace backend.BL
         {
             string apiUrl = $"https://tinyurl.com/api-create.php?url={Uri.EscapeDataString(longUrl)}";
 
+            //httpClient
             using WebClient client = new WebClient();
             return client.DownloadString(apiUrl);
         }

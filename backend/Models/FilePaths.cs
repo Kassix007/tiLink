@@ -1,8 +1,8 @@
-﻿namespace backend
+﻿namespace backend.Models
 {
     public class FilePaths
     {
-        public string folderPath { get; set; }
+        public string FolderPath { get; set; }
         public string CsvFile { get; set; }
     }
 }

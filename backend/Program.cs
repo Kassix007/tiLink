@@ -1,8 +1,12 @@
-using backend;
+using backend.Models;
+using backend.Service;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
+builder.Services.AddScoped<FileService>();
+
+
 
 builder.Services.AddControllers();
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
@@ -21,7 +25,11 @@ builder.Services.AddCors(options =>
 });
 
 //Bind configs
-builder.Services.Configure<FilePaths>(builder.Configuration.GetSection("FilePaths"));
+builder.Services.Configure<FilePaths>(builder.Configuration.GetSection("Paths"));
+
+
+
+
 
 var app = builder.Build();
 
