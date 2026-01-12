@@ -1,5 +1,6 @@
 ﻿using backend.BL;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 using System.Security.Cryptography.X509Certificates;
 
 namespace backend.Controllers
@@ -14,9 +15,12 @@ namespace backend.Controllers
 
         private static readonly object _lock = new();
 
-        [HttpGet(Name = "GetText")]
-        public void GetText(string csvText)
+        [HttpPost("retrieve-text")]
+        public void retrieveText(string csvText)
         {
+            IOptions<FilePaths> options = null;
+            CreateFileStorage createFileStorage = new CreateFileStorage(options);
+            createFileStorage.CreateCsv();
 
             string id = Guid.NewGuid().ToString();
 
@@ -42,10 +46,7 @@ namespace backend.Controllers
                     Console.WriteLine("Error");
                 }
             }
-        }
-        [HttpPost("retrieve-text")]
-        public void retrieveText(string csvText)
-        {
+
             URLShortener urlShortener = new URLShortener();
             urlShortener.UseRetrieveText(csvText);
         }

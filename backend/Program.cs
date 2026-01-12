@@ -1,3 +1,5 @@
+using backend;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
@@ -17,6 +19,9 @@ builder.Services.AddCors(options =>
                 .AllowAnyMethod();
         });
 });
+
+//Bind configs
+builder.Services.Configure<FilePaths>(builder.Configuration.GetSection("FilePaths"));
 
 var app = builder.Build();
 
