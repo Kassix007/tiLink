@@ -2,10 +2,11 @@
 using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
 using static System.IO.StreamWriter;
+using System.Globalization;
 
 namespace backend.Service
 {
-    public class FileService
+    public class FileService //: FileManipulation
     {
         private readonly string _path;
         private readonly string _csvFile;
@@ -56,5 +57,71 @@ namespace backend.Service
             }
             return true;
         }
+
+        public HashSet<Link> GetLongUrls()
+        {
+            var links = new HashSet<Link>();
+
+            if (!File.Exists(_csvFile))
+                return links;
+
+            foreach (var line in File.ReadLines(_csvFile).Skip(1)) // skip header
+            {
+                if (string.IsNullOrWhiteSpace(line))
+                    continue;
+
+                var parts = line.Split(',');
+
+                if (parts.Length < 5)
+                    continue;
+
+                var link = new Link
+                {
+                    Id = Guid.Parse(parts[0]),
+                    Name = parts[1],
+                    LongURL = parts[2],
+                    ShortURL = parts[3],
+                    ExpiryDate = parts[4],
+                };
+
+                links.Add(link); // ✅ HashSet enforces unique ShortURL
+            }
+
+            return links;
+        }
+
+
+        //readAllLinksByID - return Link object
+        public string? GetLongUrlById(Guid id)
+        {
+            if (!File.Exists(_csvFile))
+                return null;
+
+            using var parser = new TextFieldParser(_csvFile); //to avoid crash on links with commas
+            parser.TextFieldType = FieldType.Delimited;
+            parser.SetDelimiters(",");
+
+            // Skip header
+            if (!parser.EndOfData)
+                parser.ReadLine();
+
+            while (!parser.EndOfData)
+            {
+                var fields = parser.ReadFields();
+                if (fields == null || fields.Length < 3)
+                    continue;
+
+                // Trim spaces just in case
+                var rowIdStr = fields[0].Trim();
+
+                if (Guid.TryParse(rowIdStr, out var rowId) && rowId == id)
+                {
+                    return fields[2].Trim(); // LongURL
+                }
+            }
+
+            return null; // not found
+        }
+
     }
 }
