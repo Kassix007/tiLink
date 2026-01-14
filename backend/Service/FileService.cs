@@ -1,5 +1,7 @@
 ﻿using backend.Models;
 using Microsoft.Extensions.Options;
+using Microsoft.VisualBasic.FileIO;
+using static System.IO.StreamWriter;
 
 namespace backend.Service
 {
@@ -17,29 +19,21 @@ namespace backend.Service
 
         //methods
         //to refactor proper initialisation
-        private bool isFileValid()
+        private bool IsFileValid()
         {
-            if (!Directory.Exists(_path))
-                Directory.CreateDirectory(_path);
-            //problematic
-            if (!System.IO.File.Exists(_csvFile))
-            {
-                return true;
-            }
-
-            return false;
+            Directory.CreateDirectory(_path);
+            return File.Exists(_csvFile);
         }
 
-        public bool addToFile(Link link)
+        public bool AddToFile(Link link)
         {
-            if (isFileValid())
+            if (IsFileValid())
             {
                 lock (_lock)
                 {
-                    //using StreamWriter headerWriter = new StreamWriter(_csvFile, append: false);
                     if (!System.IO.File.Exists(_csvFile))
                     {
-                        using StreamWriter headerWriter = new StreamWriter(_csvFile, append: false);
+                        StreamWriter headerWriter = new StreamWriter(_csvFile, append: false);
                         headerWriter.WriteLine("ID,Name,LongURL,ShortURL,ExpiryDate");
                     }
 
@@ -47,32 +41,20 @@ namespace backend.Service
                     try
                     {
                         string id = Guid.NewGuid().ToString();
-                        using StreamWriter writer = new StreamWriter(_csvFile, append: true); //write data to file
-                        writer.WriteLine($"{id},{link.LongURL},{link.ShortURL},{link.ExpiryDate}");
+
+                        using (var writer = new StreamWriter(_csvFile, append: true))
+                        {
+                            writer.WriteLine($"{id},{link.Name},{link.LongURL},{link.ShortURL},{link.ExpiryDate}");
+                        }
                     }
 
                     catch (Exception ex)
                     {
                         throw;
-                        //Console.WriteLine("Error");
                     }
                 }
             }
-
             return true;
         }
-
-        //readAllLinksFromCSV - return HashSet/List of Link
-
-        //readAllLinksByID - return Link object
-
-        //for these 2 methods, add 
-
-
-
-
-
-        //to add other file manipulation methods
-        //read write create update by ID
     }
 }
