@@ -58,7 +58,7 @@ namespace backend.Service
             return true;
         }
 
-        public HashSet<Link> GetLongUrls()
+        public HashSet<Link> GetLongUrlsById()
         {
             var links = new HashSet<Link>();
 
@@ -92,36 +92,36 @@ namespace backend.Service
 
 
         //readAllLinksByID - return Link object
-        public string? GetLongUrlById(Guid id)
+        public Link GetLongUrlById(Guid id)
         {
+            var link = new Link();
+
             if (!File.Exists(_csvFile))
-                return null;
+                return link;
 
-            using var parser = new TextFieldParser(_csvFile); //to avoid crash on links with commas
-            parser.TextFieldType = FieldType.Delimited;
-            parser.SetDelimiters(",");
-
-            // Skip header
-            if (!parser.EndOfData)
-                parser.ReadLine();
-
-            while (!parser.EndOfData)
+            foreach (var line in File.ReadLines(_csvFile).Skip(1)) // skip header
             {
-                var fields = parser.ReadFields();
-                if (fields == null || fields.Length < 3)
+                if (string.IsNullOrWhiteSpace(line))
                     continue;
 
-                // Trim spaces just in case
-                var rowIdStr = fields[0].Trim();
+                var parts = line.Split(',');
 
-                if (Guid.TryParse(rowIdStr, out var rowId) && rowId == id)
+                if (parts.Length < 5)
+                    continue;
+
+                if (!Guid.TryParse(parts[0].Trim(), out var rowId))
+                    continue;
+
+                if (rowId == id)
                 {
-                    return fields[2].Trim(); // LongURL
+                    link.Id = Guid.Parse(parts[0].Trim());
+                    link.Name = parts[1].Trim();
+                    link.LongURL = parts[2].Trim();
+                    link.ShortURL = parts[3].Trim();
+                    link.ExpiryDate = parts[4].Trim();
                 }
             }
-
-            return null; // not found
+            return link;
         }
-        
     }
 }

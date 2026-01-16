@@ -23,7 +23,14 @@ public class GetTextController : ControllerBase
     [HttpGet("GetAllLongURLs")]
     public IActionResult getAllLongURLs()
     {
-        var urls = _file.GetLongUrls();
+        var urls = _file.GetLongUrlsById();
         return Ok(urls);
+    }
+
+    [HttpGet("GetLongUrlById")]
+    public IActionResult getLongUrlById(Guid id)
+    {
+        var url = _file.GetLongUrlById(id);
+        return Ok(url);
     }
 }
