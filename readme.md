@@ -36,3 +36,6 @@ simply input longURL -> server processing -> display shortURL
 while server active,
 whenver shortURL is redirected,
 data capture.
+
+
+--redirect 302 completed
