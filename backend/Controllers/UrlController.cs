@@ -1,5 +1,6 @@
 ﻿namespace backend.Controllers
 {
+    using backend.AnalyticsModel;
     using backend.Models;
     using backend.Service;
     using Microsoft.AspNetCore.Mvc;
@@ -12,13 +13,15 @@
         private readonly NgrokService _ngrok;
         private readonly AnalyticsService _analyticsService;
         private readonly DeviceService _deviceService;
+        private readonly FileService _file;
 
-        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService, DeviceService deviceService)
+        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService, DeviceService deviceService, FileService file)
         {
             _store = store;
             _ngrok = ngrok;
             _analyticsService = analyticsService;
             _deviceService = deviceService;
+            _file = file;
         }
 
         [HttpPost("shorten")]
@@ -42,6 +45,8 @@
             string ipAddress = _analyticsService.GetClientIp();
 
             var info = _deviceService.GetDeviceInfo();
+
+            _file.AddDeviceInfoToFile(info, code);
 
             if (longUrl == null)
                 return NotFound("Short URL not found");

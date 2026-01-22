@@ -3,6 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
 using static System.IO.StreamWriter;
 using System.Globalization;
+using backend.AnalyticsModel;
 
 namespace backend.Service
 {
@@ -17,15 +18,29 @@ namespace backend.Service
         {
             _path = options.Value.FolderPath;
             _csvFile = options.Value.CsvFile;
-            //_analyticsCsv = options.Value.CsvFile;
+            _analyticsCsv = options.Value.AnalyticsCsv;
         }
 
         //methods
         //to refactor proper initialisation
         private bool IsFileValid()
         {
+            if (!Directory.Exists(_path))
             Directory.CreateDirectory(_path);
-            return File.Exists(_csvFile);
+
+            if (!File.Exists(_csvFile))
+            {
+                using var writer = new StreamWriter(_csvFile, append: false);
+                writer.WriteLine("ID,Name,LongURL,ShortURL,ExpiryDate");
+            }
+
+            if (!File.Exists(_analyticsCsv))
+            {
+                using var writer = new StreamWriter(_analyticsCsv, append: false);
+                writer.WriteLine("ID,UserAgent,Browser,OperatingSystem,DeviceType");
+            }
+            
+            return File.Exists(_csvFile) && File.Exists(_analyticsCsv);
         }
 
         public bool AddShortenedLinkToFile(Link link)
@@ -34,27 +49,10 @@ namespace backend.Service
             {
                 lock (_lock)
                 {
-                    if (!System.IO.File.Exists(_csvFile))
-                    {
-                        StreamWriter headerWriter = new StreamWriter(_csvFile, append: false);
-                        headerWriter.WriteLine("ID,Name,LongURL,ShortURL,ExpiryDate");
-                    }
+                    string id = Guid.NewGuid().ToString();
 
-                    //refact
-                    try
-                    {
-                        string id = Guid.NewGuid().ToString();
-
-                        using (var writer = new StreamWriter(_csvFile, append: true))
-                        {
-                            writer.WriteLine($"{id},{link.Name},{link.LongURL},{link.ShortURL},{link.ExpiryDate}");
-                        }
-                    }
-
-                    catch (Exception ex)
-                    {
-                        throw;
-                    }
+                    using var writer = new StreamWriter(_csvFile, append: true);
+                    writer.WriteLine($"{id},{link.Name},{link.LongURL},{link.ShortURL},{link.ExpiryDate}");
                 }
             }
             return true;
@@ -124,6 +122,19 @@ namespace backend.Service
                 }
             }
             return link;
+        }
+
+        public bool AddDeviceInfoToFile(DeviceInfo deviceInfo, string id)
+        {
+            if (IsFileValid())
+            {
+                lock (_lock)
+                {
+                    using var writer = new StreamWriter(_analyticsCsv, append: true);
+                    writer.WriteLine($"{id},{deviceInfo.UserAgent},{deviceInfo.Browser},{deviceInfo.OperatingSystem},{deviceInfo.DeviceType}");
+                }
+            }
+            return true;
         }
     }
 }
