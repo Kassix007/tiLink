@@ -4,5 +4,6 @@
     {
         public string FolderPath { get; set; }
         public string CsvFile { get; set; }
+        public string AnalyticsCsv {  get; set; }
     }
 }
