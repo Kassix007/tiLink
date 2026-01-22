@@ -10,6 +10,8 @@ builder.Services.AddSingleton<NgrokService>();
 builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddHttpContextAccessor();
+builder.Services.AddSingleton<AnalyticsService>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("ReactApp",

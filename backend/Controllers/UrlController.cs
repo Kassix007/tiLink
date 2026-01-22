@@ -10,11 +10,13 @@
     {
         private readonly UrlStore _store;
         private readonly NgrokService _ngrok;
+        private readonly AnalyticsService _analyticsService;
 
-        public UrlController(UrlStore store, NgrokService ngrok)
+        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService)
         {
             _store = store;
             _ngrok = ngrok;
+            _analyticsService = analyticsService;
         }
 
         [HttpPost("shorten")]
@@ -34,6 +36,8 @@
         public IActionResult RedirectToLongUrl(string code)
         {
             var longUrl = _store.Get(code);
+
+            string ipAddress = _analyticsService.GetClientIp();
 
             if (longUrl == null)
                 return NotFound("Short URL not found");
