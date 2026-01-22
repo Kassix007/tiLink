@@ -16,7 +16,7 @@ public class GetTextController : ControllerBase
     [HttpPost("addtoFile")]
     public IActionResult addToFile([FromBody] Link link)
     {
-        _file.AddToFile(link);
+        _file.AddShortenedLinkToFile(link);
         return Ok("Saved to CSV");
     }
 

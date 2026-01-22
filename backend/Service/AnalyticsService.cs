@@ -1,4 +1,6 @@
-﻿namespace backend.Service
+﻿using UAParser;
+
+namespace backend.Service
 {
     public class AnalyticsService
     {
@@ -28,3 +30,4 @@
         }
     }
 }
+//Find alternative for ngrok path in appsettings.json so that it does not conflict with other machines

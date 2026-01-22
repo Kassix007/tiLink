@@ -11,11 +11,13 @@ namespace backend.Service
         private readonly string _path;
         private readonly string _csvFile;
         private static readonly object _lock = new();
+        private readonly string _analyticsCsv;
 
         public FileService(IOptions<FilePaths> options)
         {
             _path = options.Value.FolderPath;
             _csvFile = options.Value.CsvFile;
+            //_analyticsCsv = options.Value.CsvFile;
         }
 
         //methods
@@ -26,7 +28,7 @@ namespace backend.Service
             return File.Exists(_csvFile);
         }
 
-        public bool AddToFile(Link link)
+        public bool AddShortenedLinkToFile(Link link)
         {
             if (IsFileValid())
             {

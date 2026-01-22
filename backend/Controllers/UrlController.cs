@@ -11,12 +11,14 @@
         private readonly UrlStore _store;
         private readonly NgrokService _ngrok;
         private readonly AnalyticsService _analyticsService;
+        private readonly DeviceService _deviceService;
 
-        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService)
+        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService, DeviceService deviceService)
         {
             _store = store;
             _ngrok = ngrok;
             _analyticsService = analyticsService;
+            _deviceService = deviceService;
         }
 
         [HttpPost("shorten")]
@@ -36,8 +38,10 @@
         public IActionResult RedirectToLongUrl(string code)
         {
             var longUrl = _store.Get(code);
-
+             
             string ipAddress = _analyticsService.GetClientIp();
+
+            var info = _deviceService.GetDeviceInfo();
 
             if (longUrl == null)
                 return NotFound("Short URL not found");
@@ -45,5 +49,4 @@
             return Redirect(longUrl);
         }
     }
-
 }
