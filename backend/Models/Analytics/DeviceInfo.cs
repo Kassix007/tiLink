@@ -1,4 +1,4 @@
-﻿namespace backend.AnalyticsModel
+﻿namespace backend.Models.Analytics
 {
     public class DeviceInfo
     {

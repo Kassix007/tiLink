@@ -1,4 +1,4 @@
-﻿using backend.AnalyticsModel;
+﻿using backend.Models.Analytics;
 using UAParser;
 
 namespace backend.Service

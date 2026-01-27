@@ -1,7 +1,7 @@
 ﻿namespace backend.Controllers
 {
-    using backend.AnalyticsModel;
     using backend.Models;
+    using backend.Models.Analytics;
     using backend.Service;
     using Microsoft.AspNetCore.Mvc;
 
@@ -44,7 +44,7 @@
              
             string ipAddress = _analyticsService.GetClientIp();
 
-            var info = _deviceService.GetDeviceInfo();
+            DeviceInfo info = _deviceService.GetDeviceInfo();
 
             _file.AddDeviceInfoToFile(info, code);
 

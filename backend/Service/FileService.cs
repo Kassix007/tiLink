@@ -3,7 +3,7 @@ using Microsoft.Extensions.Options;
 using Microsoft.VisualBasic.FileIO;
 using static System.IO.StreamWriter;
 using System.Globalization;
-using backend.AnalyticsModel;
+using backend.Models.Analytics;
 
 namespace backend.Service
 {

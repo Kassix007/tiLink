@@ -15,3 +15,8 @@
             => ShortURL.GetHashCode();
     }
 }
+
+
+// XML -> Read/write
+// Use Link Object to map to XML
+// Link -> many small DeviceInfo Objects
