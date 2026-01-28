@@ -3,7 +3,9 @@
     using backend.Models;
     using backend.Models.Analytics;
     using backend.Service;
+    using backend.XML;
     using Microsoft.AspNetCore.Mvc;
+    using static backend.XML.XMLModel;
 
     [ApiController]
     [Route("")]
@@ -14,14 +16,16 @@
         private readonly AnalyticsService _analyticsService;
         private readonly DeviceService _deviceService;
         private readonly FileService _file;
+        private readonly XMLMapper _xmlMapper;
 
-        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService, DeviceService deviceService, FileService file)
+        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService, DeviceService deviceService, FileService file, XMLMapper xmlMapper)
         {
             _store = store;
             _ngrok = ngrok;
             _analyticsService = analyticsService;
             _deviceService = deviceService;
             _file = file;
+            _xmlMapper = xmlMapper;
         }
 
         [HttpPost("shorten")]
@@ -41,7 +45,7 @@
         public IActionResult RedirectToLongUrl(string code)
         {
             var longUrl = _store.Get(code);
-             
+
             string ipAddress = _analyticsService.GetClientIp();
 
             DeviceInfo info = _deviceService.GetDeviceInfo();
