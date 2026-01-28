@@ -1,10 +1,12 @@
 using backend.Models;
 using backend.Service;
+using backend.XML;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ------------------ Add Services ------------------
 builder.Services.AddScoped<FileService>();
+builder.Services.AddSingleton<XMLMapper>();
 builder.Services.AddSingleton<UrlStore>();
 builder.Services.AddSingleton<NgrokService>();
 builder.Services.AddControllers();

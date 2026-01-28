@@ -35,6 +35,14 @@
                 return BadRequest("Invalid URL");
 
             var code = Guid.NewGuid().ToString("N")[..6];
+            var link = new Link();
+            link.LongURL = request.LongUrl;
+            link.ShortURL = code;
+            link.ExpiryDate = "2050";
+
+           var xmlObj =  _xmlMapper.Map(link,new DeviceInfo());
+            _xmlMapper.Save(xmlObj);
+            //save
             _store.Save(code, request.LongUrl);
 
             var baseUrl = _ngrok.PublicUrl ?? $"{Request.Scheme}://{Request.Host}";

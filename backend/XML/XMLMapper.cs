@@ -55,9 +55,9 @@ namespace backend.XML
             };
         }
 
-        public void Save(XMLModel xml)
+        public void Save(LinkAnalyticsXml xml)
         {
-            var serializer = new XmlSerializer(typeof(XMLModel));
+            var serializer = new XmlSerializer(typeof(LinkAnalyticsXml));
 
             using var stream = new FileStream(_xmlFile, FileMode.Create);
             serializer.Serialize(stream, xml);
