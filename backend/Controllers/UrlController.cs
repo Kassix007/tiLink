@@ -14,16 +14,14 @@
     {
         private readonly UrlStore _store;
         private readonly NgrokService _ngrok;
-        private readonly AnalyticsService _analyticsService;
         private readonly DeviceService _deviceService;
         private readonly FileService _file;
         private readonly XMLMapper _xmlMapper;
 
-        public UrlController(UrlStore store, NgrokService ngrok, AnalyticsService analyticsService, DeviceService deviceService, FileService file, XMLMapper xmlMapper)
+        public UrlController(UrlStore store, NgrokService ngrok,  DeviceService deviceService, FileService file, XMLMapper xmlMapper)
         {
             _store = store;
             _ngrok = ngrok;
-            _analyticsService = analyticsService;
             _deviceService = deviceService;
             _file = file;
             _xmlMapper = xmlMapper;
@@ -58,7 +56,7 @@
         {
             var longUrl = _store.Get(code);
 
-            string ipAddress = _analyticsService.GetClientIp();
+            string ipAddress = _deviceService.GetClientIp();
 
             DeviceInfo info = _deviceService.GetDeviceInfo();
 

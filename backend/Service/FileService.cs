@@ -131,7 +131,7 @@ namespace backend.Service
                 lock (_lock)
                 {
                     using var writer = new StreamWriter(_analyticsCsv, append: true);
-                    writer.WriteLine($"{id},{deviceInfo.UserAgent},{deviceInfo.Browser},{deviceInfo.OperatingSystem},{deviceInfo.DeviceType}");
+                    writer.WriteLine($"{id},{deviceInfo.IPAddress},{deviceInfo.UserAgent},{deviceInfo.Browser},{deviceInfo.OperatingSystem},{deviceInfo.DeviceType}");
                 }
             }
             return true;
