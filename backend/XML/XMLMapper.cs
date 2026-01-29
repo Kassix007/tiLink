@@ -11,56 +11,79 @@ namespace backend.XML
     public class XMLMapper
     {
         private readonly string _xmlFile;
+        private static readonly object _fileLock = new();
 
         public XMLMapper(IOptions<FilePaths> options)
         {
+            var projectRoot = Directory.GetCurrentDirectory();
+            _xmlFile = Path.Combine(projectRoot, options.Value.XmlFile);
+            Directory.CreateDirectory(Path.GetDirectoryName(_xmlFile)!);
+
             _xmlFile = options.Value.XmlFile;
         }
 
-        public LinkAnalyticsXml Map(Link link, DeviceInfo? device)
+        public void SaveOrAppend(Link link, DeviceInfo? device = null)
         {
-            var xml = new LinkAnalyticsXml
+            lock (_fileLock)
             {
-                Id = link.Id,
-                Name = link.Name,
-                LongURL = link.LongURL,
-                ShortURL = link.ShortURL,
-                ExpiryDate = link.ExpiryDate
-            };
+                var collection = LoadOrCreate();
 
-            if (device != null)
+                var existingLink = collection.Links
+                    .FirstOrDefault(l => l.Id == link.Id);
+
+                if (existingLink == null)
+                {
+                    existingLink = new LinkAnalyticsXml
+                    {
+                        Id = link.Id,
+                        Name = link.Name,
+                        LongURL = link.LongURL,
+                        ShortURL = link.ShortURL,
+                        ExpiryDate = link.ExpiryDate
+                    };
+
+                    collection.Links.Add(existingLink);
+                }
+
+                existingLink.Devices.Add(device);
+
+                Save(collection);
+            }
+        }
+
+        public void AppendDevice(LinkAnalyticsXml xmlNode, DeviceInfo device)
+        {
+            lock (_fileLock)
             {
-                xml.Devices.Add(ToDeviceXml(device));
+                var collection = LoadOrCreate();
+
+                var existing = collection.Links.FirstOrDefault(x => x.Id == xmlNode.Id);
+                if (existing != null)
+                    existing.Devices.Add(device);
+                    Save(collection);
+            }
+        }
+
+
+        public LinkAnalyticsCollection LoadOrCreate()
+        {
+            if (!File.Exists(_xmlFile))
+            {
+                return new LinkAnalyticsCollection();
             }
 
-            return xml;
+            var serializer = new XmlSerializer(typeof(LinkAnalyticsCollection));
+
+            using var stream = new FileStream(_xmlFile, FileMode.Open);
+            return (LinkAnalyticsCollection)serializer.Deserialize(stream)!;
         }
 
-        public void AddDevices(LinkAnalyticsXml xml, IEnumerable<DeviceInfo> devices)
+        private void Save(LinkAnalyticsCollection collection)
         {
-            foreach (var device in devices)
-            {
-                xml.Devices.Add(ToDeviceXml(device));
-            }
-        }
-
-        private static DeviceInfo ToDeviceXml(DeviceInfo device)
-        {
-            return new DeviceInfo
-            {
-                UserAgent = device.UserAgent,
-                Browser = device.Browser,
-                OperatingSystem = device.OperatingSystem,
-                DeviceType = device.DeviceType
-            };
-        }
-
-        public void Save(LinkAnalyticsXml xml)
-        {
-            var serializer = new XmlSerializer(typeof(LinkAnalyticsXml));
+            var serializer = new XmlSerializer(typeof(LinkAnalyticsCollection));
 
             using var stream = new FileStream(_xmlFile, FileMode.Create);
-            serializer.Serialize(stream, xml);
+            serializer.Serialize(stream, collection);
         }
     }
 }

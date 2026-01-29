@@ -5,6 +5,7 @@
     using backend.Service;
     using backend.XML;
     using Microsoft.AspNetCore.Mvc;
+    using UAParser;
     using static backend.XML.XMLModel;
 
     [ApiController]
@@ -35,14 +36,17 @@
                 return BadRequest("Invalid URL");
 
             var code = Guid.NewGuid().ToString("N")[..6];
-            var link = new Link();
-            link.LongURL = request.LongUrl;
-            link.ShortURL = code;
-            link.ExpiryDate = "2050";
 
-           var xmlObj =  _xmlMapper.Map(link,new DeviceInfo());
-            _xmlMapper.Save(xmlObj);
-            //save
+            var link = new Link
+            {
+                Id = Guid.NewGuid(),
+                LongURL = request.LongUrl,
+                ShortURL = code,
+                ExpiryDate = "2050"
+            };
+
+            _xmlMapper.SaveOrAppend(link);
+
             _store.Save(code, request.LongUrl);
 
             var baseUrl = _ngrok.PublicUrl ?? $"{Request.Scheme}://{Request.Host}";
@@ -57,6 +61,11 @@
             string ipAddress = _analyticsService.GetClientIp();
 
             DeviceInfo info = _deviceService.GetDeviceInfo();
+
+            var collection = _xmlMapper.LoadOrCreate();
+            var link = collection.Links.FirstOrDefault(x => x.ShortURL == code) ?? new LinkAnalyticsXml();
+
+            _xmlMapper.AppendDevice(link, info);
 
             _file.AddDeviceInfoToFile(info, code);
 
