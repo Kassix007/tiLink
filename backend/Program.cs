@@ -13,7 +13,6 @@ builder.Services.AddControllers();
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
 builder.Services.AddHttpContextAccessor();
-builder.Services.AddSingleton<AnalyticsService>();
 builder.Services.AddSingleton<DeviceService>();
 builder.Services.AddCors(options =>
 {
