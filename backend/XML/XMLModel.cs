@@ -14,6 +14,7 @@ namespace backend.XML
             public string LongURL { get; set; } = string.Empty;
             public string ShortURL { get; set; } = string.Empty;
             public string ExpiryDate { get; set; } = string.Empty;
+            public DateTime? CreatedTimestamp { get; set; }
 
             [XmlArray("Devices")]
             [XmlArrayItem("Device")]

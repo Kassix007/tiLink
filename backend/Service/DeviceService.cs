@@ -48,7 +48,8 @@ namespace backend.Service
                 UserAgent = userAgent,
                 Browser = $"{clientInfo.UA.Family} {clientInfo.UA.Major}.{clientInfo.UA.Minor}",
                 OperatingSystem = $"{clientInfo.OS.Family} {clientInfo.OS.Major}.{clientInfo.OS.Minor}",
-                DeviceType = GetDeviceType(clientInfo)
+                DeviceType = GetDeviceType(clientInfo),
+                AccessedTime = DateTime.UtcNow
             };
         }
 
