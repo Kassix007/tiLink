@@ -7,5 +7,6 @@
         public string Browser { get; set; }
         public string OperatingSystem { get; set; }
         public string DeviceType { get; set; }
+        public DateTime? AccessedTime { get; set; }
     }
 }

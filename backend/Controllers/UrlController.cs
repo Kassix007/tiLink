@@ -39,7 +39,8 @@
                 Id = Guid.NewGuid(),
                 LongURL = request.LongUrl,
                 ShortURL = code,
-                ExpiryDate = "2050"
+                ExpiryDate = "2050",
+                CreatedTimestamp = DateTime.UtcNow
             };
 
             _xmlMapper.SaveOrAppend(link);

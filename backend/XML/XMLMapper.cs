@@ -1,5 +1,6 @@
 ﻿using backend.Models;
 using backend.Models.Analytics;
+using backend.Service;
 using Microsoft.Extensions.Options;
 using System.Xml.Serialization;
 using static backend.XML.XMLModel;
@@ -37,7 +38,8 @@ namespace backend.XML
                         Name = link.Name,
                         LongURL = link.LongURL,
                         ShortURL = link.ShortURL,
-                        ExpiryDate = link.ExpiryDate
+                        ExpiryDate = link.ExpiryDate,
+                        CreatedTimestamp = link.CreatedTimestamp
                     };
 
                     collection.Links.Add(existingLink);
@@ -76,7 +78,7 @@ namespace backend.XML
             return (LinkAnalyticsCollection)serializer.Deserialize(stream)!;
         }
 
-        private void Save(LinkAnalyticsCollection collection)
+        public void Save(LinkAnalyticsCollection collection)
         {
             var serializer = new XmlSerializer(typeof(LinkAnalyticsCollection));
 
