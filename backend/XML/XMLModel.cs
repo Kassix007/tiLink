@@ -1,5 +1,4 @@
-﻿using backend.Models;
-using backend.Models.Analytics;
+﻿using backend.Models.Analytics;
 using System.Xml.Serialization;
 
 namespace backend.XML

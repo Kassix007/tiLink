@@ -5,7 +5,6 @@
     using backend.Service;
     using backend.XML;
     using Microsoft.AspNetCore.Mvc;
-    using UAParser;
     using static backend.XML.XMLModel;
 
     [ApiController]
@@ -18,7 +17,7 @@
         private readonly FileService _file;
         private readonly XMLMapper _xmlMapper;
 
-        public UrlController(UrlStore store, NgrokService ngrok,  DeviceService deviceService, FileService file, XMLMapper xmlMapper)
+        public UrlController(UrlStore store, NgrokService ngrok, DeviceService deviceService, FileService file, XMLMapper xmlMapper)
         {
             _store = store;
             _ngrok = ngrok;
@@ -64,8 +63,6 @@
             var link = collection.Links.FirstOrDefault(x => x.ShortURL == code) ?? new LinkAnalyticsXml();
 
             _xmlMapper.AppendDevice(link, info);
-
-            _file.AddDeviceInfoToFile(info, code);
 
             if (longUrl == null)
                 return NotFound("Short URL not found");

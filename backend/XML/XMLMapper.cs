@@ -1,9 +1,7 @@
 ﻿using backend.Models;
 using backend.Models.Analytics;
 using Microsoft.Extensions.Options;
-using System.Xml.Linq;
 using System.Xml.Serialization;
-using UAParser;
 using static backend.XML.XMLModel;
 
 namespace backend.XML
