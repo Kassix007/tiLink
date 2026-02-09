@@ -1,12 +1,14 @@
 using backend.Models;
 using backend.Service;
 using backend.XML;
+using Microsoft.AspNetCore.Diagnostics;
+using Serilog;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // ------------------ Add Services ------------------
 builder.Services.AddScoped<FileService>();
-builder.Services.AddSingleton<XMLMapper>();
+builder.Services.AddSingleton<XMLService>();
 builder.Services.AddSingleton<UrlStore>();
 builder.Services.AddSingleton<NgrokService>();
 builder.Services.AddControllers();
@@ -21,14 +23,52 @@ builder.Services.AddCors(options =>
 });
 builder.Services.Configure<FilePaths>(builder.Configuration.GetSection("Paths"));
 
+// ------------------ Configure SeriLog ------------------
+
+Log.Logger = new LoggerConfiguration()
+    .MinimumLevel.Error()
+    .WriteTo.File(
+        path: "Logs/errors-.log",
+        rollingInterval: RollingInterval.Day,
+        retainedFileCountLimit: 14)
+    .CreateLogger();
+
+builder.Host.UseSerilog();
+
 // ------------------ Build App ------------------
 var app = builder.Build();
+
+// ------------------ Global Exception Handling ------------------
+if (!app.Environment.IsDevelopment())
+{
+    app.UseExceptionHandler(errorApp =>
+    {
+        errorApp.Run(async context =>
+        {
+            var exception = context.Features
+                .Get<IExceptionHandlerFeature>()?
+                .Error;
+
+            if (exception != null)
+            {
+                Log.Error(exception, "Unhandled exception");
+            }
+
+            context.Response.StatusCode = StatusCodes.Status500InternalServerError;
+            await context.Response.WriteAsync("An unexpected error occurred.");
+        });
+    });
+}
+
+// ------------------ Swagger ------------------
 
 if (app.Environment.IsDevelopment())
 {
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+// ------------------ Middleware Pipeline ------------------
 
 //app.UseHttpsRedirection();
 app.UseCors("ReactApp");

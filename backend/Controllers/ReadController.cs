@@ -5,17 +5,17 @@ namespace backend.Controllers
 {
     public class ReadController : Controller
     {
-        private readonly XMLMapper _xmlMapper;
+        private readonly XMLService _xmlService;
 
-        public ReadController(XMLMapper xmlMapper)
+        public ReadController(XMLService xmlService)
         {
-            _xmlMapper = xmlMapper;
+            _xmlService = xmlService;
         }
 
         [HttpGet("Read/Analytics/{code}")]
         public IActionResult GetLinkByShortCode(string code)
         {
-            var collection = _xmlMapper.LoadOrCreate();
+            var collection = _xmlService.LoadOrCreate();
             var link = collection.Links.FirstOrDefault(l => l.ShortURL == code);
 
             return Ok(link);
