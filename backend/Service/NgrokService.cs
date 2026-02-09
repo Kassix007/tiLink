@@ -1,25 +1,40 @@
-﻿using System.Diagnostics;
-using System.Net.Http;
+﻿using Microsoft.Extensions.Logging;
+using System.Diagnostics;
 using System.Text.Json;
 
 public class NgrokService
 {
     private readonly HttpClient _http = new HttpClient();
     private Process? _ngrokProcess;
+    private readonly ILogger<NgrokService> _logger;
 
     public string? PublicUrl { get; private set; }
+
+    public NgrokService(ILogger<NgrokService> logger)
+    {
+        _logger = logger;
+    }
 
     /// <summary>
     /// Starts ngrok on the given local port and waits until the tunnel is established.
     /// </summary>
     public async Task StartAsync(int localPort)
     {
+        //setx NGROK_PATH "C:\Users\Yajnesh\AppData\Local\Microsoft\WindowsApps\ngrok.exe" -> Powershell command to set ngrok as env variables + visual studio restart needed
+        var ngrokPath = Environment.GetEnvironmentVariable("NGROK_PATH");
+
+        if (string.IsNullOrWhiteSpace(ngrokPath))
+        {
+            _logger.LogError("Environment variable NGROK_PATH is not set. Download the NGROK Service and set it in enmvironment variales.");
+            throw new InvalidOperationException("Environment variable NGROK_PATH is not set. Restart visual studio after setting ngrok path.");
+        }
+
         // Start ngrok process
         _ngrokProcess = new Process
         {
             StartInfo = new ProcessStartInfo
             {
-                FileName = @"C:\ProgramData\chocolatey\bin\ngrok.exe",
+                FileName = ngrokPath,
                 Arguments = $"http {localPort} --log=stdout",
                 RedirectStandardOutput = true,
                 RedirectStandardError = true,

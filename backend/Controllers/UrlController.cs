@@ -13,22 +13,27 @@
     {
         private readonly UrlStore _store;
         private readonly NgrokService _ngrok;
-        private readonly XMLMapper _xmlMapper;
+        private readonly XMLService _xmlService;
+        private readonly ILogger<UrlController> _logger;
 
-        public UrlController(UrlStore store, NgrokService ngrok, XMLMapper xmlMapper)
+        public UrlController(UrlStore store, NgrokService ngrok, XMLService xmlService, ILogger<UrlController> logger)
         {
             _store = store;
             _ngrok = ngrok;
-            _xmlMapper = xmlMapper;
+            _xmlService = xmlService;
+            _logger = logger;
         }
 
         [HttpPost("shorten")]
         public IActionResult Shorten([FromBody] ShortenRequest request)
         {
             if (string.IsNullOrWhiteSpace(request.LongUrl))
+            {
+                _logger.LogError("URL provided was not valid.");
                 return BadRequest("Invalid URL");
+            }
 
-            var link = _xmlMapper.CreateAndSaveLink(request.LongUrl);
+            var link = _xmlService.CreateAndSaveLink(request.LongUrl);
             _store.Save(link.ShortURL, request.LongUrl);
 
             var baseUrl = _ngrok.PublicUrl ?? $"{Request.Scheme}://{Request.Host}";
@@ -40,11 +45,13 @@
         {
             var longUrl = _store.Get(code);
 
-            _xmlMapper.TrackDevice(code);
+            _xmlService.TrackDevice(code);
 
             if (longUrl == null)
+            {
+                _logger.LogError("Short URL not found");
                 return NotFound("Short URL not found");
-
+            }
             return Redirect(longUrl);
         }
     }

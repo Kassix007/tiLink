@@ -7,13 +7,13 @@ using static backend.XML.XMLModel;
 
 namespace backend.XML
 {
-    public class XMLMapper
+    public class XMLService
     {
         private readonly string _xmlFile;
         private static readonly object _fileLock = new();
         private readonly DeviceService _deviceService;
 
-        public XMLMapper(IOptions<FilePaths> options, DeviceService deviceService)
+        public XMLService(IOptions<FilePaths> options, DeviceService deviceService)
         {
             var projectRoot = Directory.GetCurrentDirectory();
             _xmlFile = Path.Combine(projectRoot, options.Value.XmlFile);
