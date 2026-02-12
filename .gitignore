@@ -8,3 +8,5 @@ obj/
 # Node
 node_modules/
 dist/
+Backend/Export/
+Logs/
