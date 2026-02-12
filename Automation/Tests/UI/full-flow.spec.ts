@@ -79,7 +79,7 @@ test('Full Flow via Swagger UI', async ({ page }) => {
 
 
     //14. Open xml file and check data
-    await page.goto('file:///C:/tiLink/backend/Export/Test.xml');
+    await page.goto('file:///C:/tiLink/backend/Export/Test.xml'); //might fail here due to path not being the same on all machines
     const xmlContent = await page.content();
     await page.waitForTimeout(3000);
 
